@@ -1,20 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>DLRSR-IMS Payroll System Login</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wages Management System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="login-container">
-    <h2>DLRSR-IMS Payroll Login</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-      <p id="loginError"></p>
-    </form>
-  </div>
-  <script src="app.js"></script>
+    <div class="container">
+        <header class="header">
+            <h1>SUNIC TECHNOLOGIES PRIVATE LIMITED</h1>
+            <p>Wages Management System</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('raw-employee')" data-tab="raw-employee">Raw Employee Data</button>
+            <button class="tab-btn" onclick="switchTab('wages')" data-tab="wages">Wages Sheet</button>
+            <button class="tab-btn" onclick="switchTab('salary-slip')" data-tab="salary-slip">Salary Slip</button>
+        </div>
+
+        <!-- Raw Employee Data Tab -->
+        <div class="tab-content active" id="raw-employee">
+            <div class="sheet-header">
+                <h2>Raw Employee Data</h2>
+                <button class="btn btn--primary" onclick="showAddEmployeeForm()">Add New Employee</button>
+            </div>
+
+            <!-- Add Employee Form -->
+            <div class="card hidden" id="add-employee-form">
+                <div class="card__body">
+                    <h3>Add New Employee</h3>
+                    <form onsubmit="addEmployee(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="emp-code">Employee Code</label>
+                                <input type="text" class="form-control" id="emp-code" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="emp-name">Employee Name</label>
+                                <input type="text" class="form-control" id="emp-name" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="wage-month">Wage Month</label>
+                                <input type="text" class="form-control" id="wage-month" placeholder="e.g., 2025-JANUARY" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="designation">Designation</label>
+                                <input type="text" class="form-control" id="designation" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="duty-days">Duty Days</label>
+                                <input type="number" class="form-control" id="duty-days" min="1" max="31" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="days-worked">Days Worked (comma separated)</label>
+                                <input type="text" class="form-control" id="days-worked" placeholder="e.g., 1,2,3,4,5,8,9" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--primary">Add Employee</button>
+                            <button type="button" class="btn btn--secondary" onclick="hideAddEmployeeForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Employee Data Table -->
+            <div class="table-container">
+                <table class="data-table" id="raw-employee-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Emp Code</th>
+                            <th>Employee Name</th>
+                            <th>Wage Month</th>
+                            <th>Designation</th>
+                            <th>Duty</th>
+                            <th>Days Worked</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="raw-employee-tbody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Wages Sheet Tab -->
+        <div class="tab-content" id="wages">
+            <div class="sheet-header">
+                <h2>Wages Sheet</h2>
+                <p class="text-muted">Data automatically populated from Raw Employee Data (Wages Rate: ₹868 fixed)</p>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="wages-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Emp Code</th>
+                            <th>Employee Name</th>
+                            <th>Wage Month</th>
+                            <th>Designation</th>
+                            <th>Wages Rate</th>
+                            <th>Duty</th>
+                            <th>Pay Amount</th>
+                            <th>OT Wages</th>
+                            <th>Bonus</th>
+                            <th>Other Allowance</th>
+                            <th>PF</th>
+                            <th>ESI</th>
+                            <th>Total Wages</th>
+                            <th>Grand Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="wages-tbody">
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Salary Slip Tab -->
+        <div class="tab-content" id="salary-slip">
+            <div class="sheet-header">
+                <h2>Salary Slip</h2>
+                <div class="salary-slip-controls">
+                    <div class="form-group">
+                        <label class="form-label" for="employee-select">Select Employee:</label>
+                        <select class="form-control" id="employee-select" onchange="generateSalarySlip(this.value)">
+                            <option value="">-- Select Employee --</option>
+                        </select>
+                    </div>
+                    <button class="btn btn--primary" onclick="window.print()">Print Salary Slip</button>
+                </div>
+            </div>
+
+            <!-- Salary Slip -->
+            <div class="salary-slip hidden" id="salary-slip-content">
+                <div class="salary-slip-header">
+                    <h2>SUNIC TECHNOLOGIES PRIVATE LIMITED</h2>
+                    <p>Corporate Office, Technology Center</p>
+                    <p>info@sunictech.com | +91-XXXXXXXXXX</p>
+                    <hr>
+                    <h3>SALARY SLIP</h3>
+                </div>
+
+                <div class="salary-slip-body">
+                    <div class="employee-details">
+                        <div class="detail-row">
+                            <span class="label">Employee Name:</span>
+                            <span class="value" id="slip-emp-name">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Employee Code:</span>
+                            <span class="value" id="slip-emp-code">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Designation:</span>
+                            <span class="value" id="slip-designation">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Month/Year:</span>
+                            <span class="value" id="slip-month">-</span>
+                        </div>
+                    </div>
+
+                    <div class="salary-details">
+                        <div class="earnings-section">
+                            <h4>EARNINGS</h4>
+                            <div class="detail-row">
+                                <span class="label">Basic Wages:</span>
+                                <span class="value" id="slip-basic-wages">₹0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">OT Wages:</span>
+                                <span class="value" id="slip-ot-wages">₹0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Bonus:</span>
+                                <span class="value" id="slip-bonus">₹0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">Other Allowance:</span>
+                                <span class="value" id="slip-other-allowance">₹0</span>
+                            </div>
+                            <div class="detail-row total-row">
+                                <span class="label">Total Earnings:</span>
+                                <span class="value" id="slip-total-earnings">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="deductions-section">
+                            <h4>DEDUCTIONS</h4>
+                            <div class="detail-row">
+                                <span class="label">PF:</span>
+                                <span class="value" id="slip-pf">₹0</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="label">ESI:</span>
+                                <span class="value" id="slip-esi">₹0</span>
+                            </div>
+                            <div class="detail-row total-row">
+                                <span class="label">Total Deductions:</span>
+                                <span class="value" id="slip-total-deductions">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="net-salary">
+                            <div class="detail-row">
+                                <span class="label">Net Salary:</span>
+                                <span class="value" id="slip-net-salary">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
