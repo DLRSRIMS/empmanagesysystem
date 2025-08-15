@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wages Register</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Wages Register</h2>
+  <form id="wagesForm">
+    <input type="text" id="empName" placeholder="Employee Name" required>
+    <input type="number" id="empSalary" placeholder="Salary" required>
+    <button type="submit">Add Entry</button>
+  </form>
+  <table id="wagesTable">
+    <tr>
+      <th>Name</th>
+      <th>Salary</th>
+    </tr>
+  </table>
+  <script>
+    const form = document.getElementById('wagesForm');
+    const table = document.getElementById('wagesTable');
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('empName').value;
+      const salary = document.getElementById('empSalary').value;
+      const row = table.insertRow(-1);
+      row.insertCell(0).innerText = name;
+      row.insertCell(1).innerText = salary;
+      form.reset();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f7fafc;
+}
+
+.login-container {
+  max-width: 350px;
+  margin: 70px auto;
+  padding: 25px 30px;
+  background: #fff;
+  box-shadow: 0 0 8px #dcdcdc;
+  border-radius: 8px;
+}
+
+input, button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+button {
+  background: #3388cc;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #286fab;
+}
